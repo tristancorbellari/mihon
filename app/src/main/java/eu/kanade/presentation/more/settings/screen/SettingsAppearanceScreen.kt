@@ -4,11 +4,15 @@ import android.app.Activity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.util.fastMap
 import androidx.core.app.ActivityCompat
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.domain.ui.model.TabletUiMode
@@ -18,9 +22,13 @@ import eu.kanade.presentation.more.settings.Preference
 import eu.kanade.presentation.more.settings.screen.appearance.AppLanguageScreen
 import eu.kanade.presentation.more.settings.widget.AppThemeModePreferenceWidget
 import eu.kanade.presentation.more.settings.widget.AppThemePreferenceWidget
+import eu.kanade.presentation.tab.visualName
+import eu.kanade.tachiyomi.ui.tab.TabScreen
 import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableMap
+import tachiyomi.domain.tab.interactor.GetTabs
+import tachiyomi.domain.tab.model.Tab
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.collectAsState
@@ -36,11 +44,14 @@ object SettingsAppearanceScreen : SearchableSettings {
 
     @Composable
     override fun getPreferences(): List<Preference> {
+        val getTabs = remember { Injekt.get<GetTabs>() }
         val uiPreferences = remember { Injekt.get<UiPreferences>() }
+        val allTabs by getTabs.subscribe().collectAsState(initial = emptyList())
 
         return listOf(
             getThemeGroup(uiPreferences = uiPreferences),
             getDisplayGroup(uiPreferences = uiPreferences),
+            getTabsGroup(LocalNavigator.currentOrThrow, allTabs, uiPreferences = uiPreferences),
         )
     }
 
@@ -148,6 +159,35 @@ object SettingsAppearanceScreen : SearchableSettings {
                 Preference.PreferenceItem.SwitchPreference(
                     preference = uiPreferences.imagesInDescription(),
                     title = stringResource(MR.strings.pref_display_images_description),
+                ),
+            ),
+        )
+    }
+
+    @Composable
+    private fun getTabsGroup(
+        navigator: Navigator,
+        allTabs: List<Tab>,
+        uiPreferences: UiPreferences,
+    ): Preference.PreferenceGroup {
+        val scope = rememberCoroutineScope()
+        // For default tab
+        val ids = listOf(uiPreferences.defaultTab().defaultValue()) +
+            allTabs.fastMap { it.id.toInt() }
+        val labels = listOf(stringResource(MR.strings.default_tab_summary)) +
+            allTabs.fastMap { it.visualName }
+
+        return Preference.PreferenceGroup(
+            title = stringResource(MR.strings.tabs),
+            preferenceItems = persistentListOf(
+                Preference.PreferenceItem.TextPreference(
+                    title = stringResource(MR.strings.action_edit_tabs),
+                    onClick = { navigator.push(TabScreen()) },
+                ),
+                Preference.PreferenceItem.ListPreference(
+                    preference = uiPreferences.defaultTab(),
+                    entries = ids.zip(labels).toMap().toImmutableMap(),
+                    title = stringResource(MR.strings.default_tab),
                 ),
             ),
         )
