@@ -1,0 +1,27 @@
+import kotlin.Boolean;
+
+CREATE TABLE tabs(
+    _id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    sort INTEGER NOT NULL,
+    enabled INTEGER AS Boolean DEFAULT 1 NOT NULL
+);
+
+-- Insert tabs
+INSERT OR IGNORE INTO tabs(_id, name, sort, enabled)
+VALUES 
+    (0, "Library", 0, 1),
+    (1, "Updates", 1, 1),
+    (2, "History", 2, 1),
+    (3, "Browse", 3, 1),
+    (4, "More", 4, 1);
+
+-- Disallow the 'More' tab to be disabled
+CREATE TRIGGER IF NOT EXISTS system_tab_disable_trigger
+BEFORE UPDATE OF enabled ON tabs
+BEGIN
+    SELECT CASE
+        WHEN old._id = 4 AND new.enabled = 0 THEN
+            RAISE(ABORT, "'More' tab cannot be disabled")
+    END;
+END;
