@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DragHandle
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.ToggleOff
+import androidx.compose.material.icons.outlined.ToggleOn
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,17 +23,19 @@ import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
-fun ReorderableCollectionItemScope.TabListItem(
+fun ReorderableCollectionItemScope.EnabledTabListItem(
     tab: Tab,
-    onRename: () -> Unit,
-    onDelete: () -> Unit,
+    // onRename: () -> Unit,
+    // onDelete: () -> Unit,
+    onDisable: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ElevatedCard(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onRename)
+                // .clickable(onClick = onRename)
+                .clickable(onClick = onDisable)
                 .padding(vertical = MaterialTheme.padding.small)
                 .padding(
                     start = MaterialTheme.padding.small,
@@ -49,19 +51,50 @@ fun ReorderableCollectionItemScope.TabListItem(
                     .draggableHandle(),
             )
             Text(
-                text = tab.name,
+                text = "${tab.name} ${tab.order}",
                 modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = onRename) {
+            // IconButton(onClick = onRename) {
+            IconButton(onClick = onDisable) {
                 Icon(
-                    imageVector = Icons.Outlined.Edit,
+                    imageVector = Icons.Outlined.ToggleOn,
                     contentDescription = stringResource(MR.strings.action_rename_category),
                 )
             }
-            IconButton(onClick = onDelete) {
+        }
+    }
+}
+
+@Composable
+fun DisabledTabListItem(
+    tab: Tab,
+    // onRename: () -> Unit,
+    // onDelete: () -> Unit,
+    onEnable: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ElevatedCard(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                // .clickable(onClick = onRename)
+                .clickable(onClick = onEnable)
+                .padding(vertical = MaterialTheme.padding.small)
+                .padding(
+                    start = MaterialTheme.padding.small,
+                    end = MaterialTheme.padding.medium,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "${tab.name} ${tab.order}",
+                modifier = Modifier.weight(1f),
+            )
+            // IconButton(onClick = onDelete) {
+            IconButton(onClick = onEnable) {
                 Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(MR.strings.action_delete),
+                    imageVector = Icons.Outlined.ToggleOff,
+                    contentDescription = stringResource(MR.strings.action_rename_category),
                 )
             }
         }

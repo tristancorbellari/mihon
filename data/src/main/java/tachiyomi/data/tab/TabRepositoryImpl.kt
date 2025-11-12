@@ -47,6 +47,22 @@ class TabRepositoryImpl(
         )
     }
 
+    override suspend fun enableTab(tabId: Long) {
+        handler.await {
+            tabsQueries.enableTab(
+                id = tabId,
+            )
+        }
+    }
+
+    override suspend fun disableTab(tabId: Long) {
+        handler.await {
+            tabsQueries.disableTab(
+                id = tabId,
+            )
+        }
+    }
+
     private fun mapTab(
         id: Long,
         name: String,

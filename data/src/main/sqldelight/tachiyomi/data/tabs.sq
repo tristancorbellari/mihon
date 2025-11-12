@@ -41,6 +41,30 @@ enabled
 FROM tabs
 ORDER BY sort;
 
+enableTab:
+WITH max_enabled AS (
+    SELECT COALESCE(MAX(sort), -1) AS max_sort
+    FROM tabs
+    WHERE enabled = 1
+)
+UPDATE tabs
+SET
+    enabled = 1,
+    sort = (SELECT max_sort + 1 FROM max_enabled)
+WHERE _id = :id;
+
+disableTab:
+WITH max_disabled AS (
+    SELECT COALESCE(MAX(sort), -1) AS max_sort
+    FROM tabs
+    WHERE enabled = 0
+)
+UPDATE tabs
+SET
+    enabled = 0,
+    sort = (SELECT max_sort + 1 FROM max_disabled)
+WHERE _id = :id;
+
 update:
 UPDATE tabs
 SET name = coalesce(:name, name),

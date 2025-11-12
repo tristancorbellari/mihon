@@ -10,9 +10,9 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.tab.TabScreen
-import eu.kanade.presentation.tab.components.TabCreateDialog
-import eu.kanade.presentation.tab.components.TabDeleteDialog
-import eu.kanade.presentation.tab.components.TabRenameDialog
+// import eu.kanade.presentation.tab.components.TabCreateDialog
+// import eu.kanade.presentation.tab.components.TabDeleteDialog
+// import eu.kanade.presentation.tab.components.TabRenameDialog
 import eu.kanade.presentation.util.Screen
 import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.collections.immutable.toImmutableList
@@ -39,41 +39,45 @@ class TabScreen : Screen() {
 
         TabScreen(
             state = successState,
-            onClickCreate = { screenModel.showDialog(TabDialog.Create) },
-            onClickRename = { screenModel.showDialog(TabDialog.Rename(it)) },
-            onClickDelete = { screenModel.showDialog(TabDialog.Delete(it)) },
+            // onClickCreate = { screenModel.showDialog(TabDialog.Create) },
+            // onClickRename = { screenModel.showDialog(TabDialog.Rename(it)) },
+            // onClickDelete = { screenModel.showDialog(TabDialog.Delete(it)) },
+            // onClickEnable = { screenModel.showDialog(TabDialog.Enable(it)) },
+            // onClickDisable = { screenModel.showDialog(TabDialog.Disable(it)) },
+            onClickEnable = screenModel::enableTab,
+            onClickDisable = screenModel::disableTab,
             onChangeOrder = screenModel::changeOrder,
             navigateUp = navigator::pop,
         )
 
-        when (val dialog = successState.dialog) {
-            null -> {}
-            TabDialog.Create -> {
-                TabCreateDialog(
-                    onDismissRequest = screenModel::dismissDialog,
-//                    onCreate = screenModel::createTab,
-                    onCreate = {},
-                    tabs = successState.tabs.fastMap { it.name }.toImmutableList(),
-                )
-            }
-            is TabDialog.Rename -> {
-                TabRenameDialog(
-                    onDismissRequest = screenModel::dismissDialog,
-//                    onRename = { screenModel.renameTab(dialog.tab, it) },
-                    onRename = { },
-                    tabs = successState.tabs.fastMap { it.name }.toImmutableList(),
-                    tab = dialog.tab.name,
-                )
-            }
-            is TabDialog.Delete -> {
-                TabDeleteDialog(
-                    onDismissRequest = screenModel::dismissDialog,
-//                    onDelete = { screenModel.deleteTab(dialog.tab.id) },
-                    onDelete = { },
-                    tab = dialog.tab.name,
-                )
-            }
-        }
+//         when (val dialog = successState.dialog) {
+//             null -> {}
+// //             TabDialog.Create -> {
+// //                 TabCreateDialog(
+// //                     onDismissRequest = screenModel::dismissDialog,
+// // //                    onCreate = screenModel::createTab,
+// //                     onCreate = {},
+// //                     tabs = successState.tabs.fastMap { it.name }.toImmutableList(),
+// //                 )
+// //             }
+//             is TabDialog.Enable -> {
+//                 TabEnableDialog(
+//                     onDismissRequest = screenModel::dismissDialog,
+//                     onEnable = { screenModel.enableTab(dialog.tab, it) },
+//                     // onEnable = { },
+//                     tabs = successState.tabs.fastMap { it.name }.toImmutableList(),
+//                     tab = dialog.tab.name,
+//                 )
+//             }
+//             is TabDialog.Disable -> {
+//                 TabDisableDialog(
+//                     onDismissRequest = screenModel::dismissDialog,
+//                     onDisable = { screenModel.disableTab(dialog.tab.id) },
+//                     // Disable = { },
+//                     tab = dialog.tab.name,
+//                 )
+//             }
+//         }
 
         LaunchedEffect(Unit) {
             screenModel.events.collectLatest { event ->

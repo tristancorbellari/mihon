@@ -89,6 +89,8 @@ import tachiyomi.domain.source.interactor.GetRemoteManga
 import tachiyomi.domain.source.interactor.GetSourcesWithNonLibraryManga
 import tachiyomi.domain.source.repository.SourceRepository
 import tachiyomi.domain.source.repository.StubSourceRepository
+import tachiyomi.domain.tab.interactor.EnableTab
+import tachiyomi.domain.tab.interactor.DisableTab
 import tachiyomi.domain.tab.interactor.GetTabs
 import tachiyomi.domain.tab.interactor.ReorderTab
 import tachiyomi.domain.tab.repository.TabRepository
@@ -120,6 +122,8 @@ class DomainModule : InjektModule {
         addFactory { DeleteCategory(get(), get(), get()) }
 
         addSingletonFactory<TabRepository> { TabRepositoryImpl(get()) }
+        addFactory { EnableTab(get()) }
+        addFactory { DisableTab(get()) }
         addFactory { GetTabs(get()) }
         addFactory { ReorderTab(get()) }
 

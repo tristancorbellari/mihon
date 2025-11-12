@@ -170,12 +170,13 @@ object SettingsAppearanceScreen : SearchableSettings {
         allTabs: List<Tab>,
         uiPreferences: UiPreferences,
     ): Preference.PreferenceGroup {
+        val enabledTabs = allTabs.filter { it.enabled }
         val scope = rememberCoroutineScope()
         // For default tab
         val ids = listOf(uiPreferences.defaultTab().defaultValue()) +
-            allTabs.fastMap { it.id.toInt() }
+            enabledTabs.fastMap { it.id.toInt() }
         val labels = listOf(stringResource(MR.strings.default_tab_summary)) +
-            allTabs.fastMap { it.visualName }
+            enabledTabs.fastMap { it.visualName }
 
         return Preference.PreferenceGroup(
             title = stringResource(MR.strings.tabs),

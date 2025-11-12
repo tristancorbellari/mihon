@@ -24,5 +24,7 @@ interface TabRepository {
 
     // suspend fun updateAllFlags(flags: Long?)
 
-    // suspend fun delete(categoryId: Long)
+    suspend fun enableTab(tabId: Long)
+
+    suspend fun disableTab(tabId: Long)
 }
